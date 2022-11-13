@@ -9,3 +9,5 @@ Try running some of the following tasks:
 ```shell
 npm start
 ```
+
+Donate: ```0x495E1b337Fe3E42b0631ce783500b5E55b6C2222```
