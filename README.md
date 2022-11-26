@@ -1,13 +1,8 @@
-# Sample Hardhat Project
+# DISPERSE ONUS ON ONUSCHAIN
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This project helps users disperse their onus or tokens to multiple wallets, so users can save their time and onus fee.
 
-Try running some of the following tasks:
+This is a non-profit project on Onus Chain. Onus-er can use this product for free. 
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+Buy me a coffee: ```0x495E1b337Fe3E42b0631ce783500b5E55b6C2222```
+
