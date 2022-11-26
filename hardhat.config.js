@@ -7,6 +7,10 @@ module.exports = {
         onus: {
             url: process.env.ONUS_URL,
             accounts: [process.env.ONUS_ACCOUNT],
+        },
+        onusTestnet: {
+            url: process.env.ONUS_TESTNET_URL,
+            accounts: [process.env.ONUS_ACCOUNT],
         }
     },
     solidity: {
