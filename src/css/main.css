@@ -40,3 +40,9 @@
     display: inline-block;
     vertical-align: top;
 }
+
+.bgcolor {
+    background-color: #7bf7fb;
+    color: black;
+    
+}

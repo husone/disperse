@@ -1,108 +1,101 @@
 import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import { ethers, Wallet } from "ethers";
 import Headers from "./Header";
-function ConnectWallet(setType) {
-    const [haveMetamask, sethaveMetamask] = useState(false);
-    const [accountAddress, setAccountAddress] = useState('');
-    const [isConnected, setIsConnected] = useState(false);
+import "../css/main.css";
+import ConnectWallet from "./ConnectWallet";
 
-    const { ethereum } = window;
-    let provider;
 
+
+function DisperseOnus() {
+    const [addresses, setAddresses] = useState([]);
+    const [amounts, setAmounts] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [onusAmount, setOnusAmount] = useState(0);
+
+    const setData = (data) => {
+        data = data.split('\n');
+        setAddresses([]);
+        setAmounts([]);
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].split(',').length == 2) data[i] = data[i].split(',');
+            else if (data[i].split('=').length == 2) data[i] = data[i].split('=');
+            else if (data[i].split(' ').length == 2) data[i] = data[i].split(' ');
+            if ((data[i].length) == 2 && data[i][1] !== '') {
+                if (ethers.utils.isAddress(data[i][0]) && !isNaN(data[i][1])) {
+                    setAddresses((addresses) => [...addresses, data[i][0]]);
+                    setAmounts((amounts) => [...amounts, data[i][1]]);
+                    console.log('wallet')
+                    console.log(data[i][0], data[i][1]);
+                }
+            }
+        }
+        // addresses.forEach(element => {
+        //     console.log('wallets',element);
+        // });
+    }
     useEffect(() => {
-        const { ethereum } = window;
-        const checkMetamaskAvailability = async () => {
-            if (!ethereum) {
-                sethaveMetamask(false);
-                console.log('no metamask');
-            }
-            sethaveMetamask(true);
-        };
-        checkMetamaskAvailability();
-    }, []);
-
-    const connectWallet = async () => {
-        try {
-            console.log("Have metamask:", haveMetamask)
-            if (!ethereum) {
-                sethaveMetamask(false);
-            }
-            const accounts = await ethereum.request({
+        const GetBalance = async () => {
+            const accounts = await window.ethereum.request({
                 method: 'eth_requestAccounts',
             });
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            const chainID = await ethereum.request({ method: 'eth_chainId' });
-            if (chainID !== '0x7b7')
-                try {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0x7b7' }],
-                    });
-                } catch (error) {
-                    if (error.code === 4902) {
-                        try {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [
-                                    {
-                                        chainId: '0x7b7',
-                                        rpcUrl: 'https://rpc.onuschain.io/',
-                                    },
-                                ],
-                            });
-                        } catch (addError) {
-                            console.error(addError);
-                        }
-                    }
-                }
-            setAccountAddress(accounts[0]);
-            setIsConnected(true);
-        } catch (error) {
-            setIsConnected(false);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            console.log(accounts[0]);
+            let t = await provider.getBalance(accounts[0]);
+            setOnusAmount(ethers.utils.formatEther(t).slice(0, 10));
         }
-    };
+        GetBalance();
+    }, []);
+
+    const bill = () => {
+        return addresses.map((address, index) => {
+            console.log('here',address, amounts[index]);
+            return (
+                <div className="bill d-inline">
+                    <div className="bill__address">{address}</div>
+                    <div className="bill__amount">{amounts[index]} Onus</div>
+                </div>
+                
+            )
+        })
+    }
 
     return (
-        <div className="mt-5" >
-            <div>
-                {haveMetamask ? (
-                    <div>
-                        {isConnected ? (
-                            <div>
-                                <div>
-                                    <h3 className="display-5">Wallet Address:</h3>
-                                    <p className="lead">
-                                        {accountAddress.slice(0,4)  + "..." + accountAddress.slice(-4)}
-                                    </p>
-                                    <p>send <a onClick={()=>setType('Onus')} href={'#'}>Onus</a> or token</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <h3 className="display-5">Connect Wallet</h3>
-                        )}
-                        {isConnected ? (<></>) : (
-                            <button className="btn btn-primary lead" onClick={connectWallet}>
-                                Connect
-                            </button>
-                        )}
-                    </div>
-                ) : (<div>
-                    <h2 className="display-3">Metamask required</h2>
-                    <h3 className="lead">Non-ethereum browser, consider installing metamask.</h3>
-                </div>
-                )}
-            </div>
+        <div>
+            <h5 className="lead">You have <mark>{onusAmount}</mark> Onus</h5>
+            <br />
+            <h5 className="">Enter one address and amount in Onus on each line. Supports any format.</h5>
+            <textarea className="form-control" rows="5" placeholder="0x42204448154CBC4E4d9e74aB08fd2A66dbc33999 1.23&#10;0x42204448154CBC4E4d9e74aB08fd2A66dbc33999,2&#10;0x42204448154CBC4E4d9e74aB08fd2A66dbc33999=0.123"
+                onChange={(e) => setData(e.target.value)} />
+                {bill}
         </div>
-    );
+    )
+
+}
+
+function DisperseToken() {
+    const [addresses, setAddresses] = useState([]);
+    const [amounts, setAmounts] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [approved, setApproved] = useState(false);
+    const [contractAddress, setContractAddress] = useState('');
 }
 
 function Main() {
-    const [type, setType] = useState('');
+    const [type, setType] = useState('Nothing');
+    
+    let next = <></>;
+    if (type == 'Onus') {
+        next = <DisperseOnus />;
+    }
+    else if (type == 'Token') {
+        next = <DisperseToken />;
+    }
+    else next = <></>;
     return (
         <div className="container">
             <Headers />
-            <ConnectWallet setType={()=>setType} />
-            {type === 'Onus' ? (<div>This is onus </div>) : (<></>)}
+            <ConnectWallet setType={setType} />
+            {next}
         </div>
     );
 }
