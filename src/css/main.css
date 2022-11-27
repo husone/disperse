@@ -46,3 +46,19 @@
     color: black;
     
 }
+
+.bdcolor {
+    background-color: #bbfdff;    
+}
+
+.amount {
+    float: right;
+}
+.expand {
+    margin: auto 0.3em;
+    border-bottom: 1px black solid;
+    margin: auto 0.3em;
+    flex-grow: 1;
+    /* border: 1px black solid; */
+
+}

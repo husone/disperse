@@ -42,14 +42,12 @@ function ConnectWallet({ setType }) {
                         {isConnected ? (
                             <div>
                                 <div>
-                                    <h3 className="display-5"><i>Wallet Address:</i> <span className="lead">{accountAddress.slice(0, 4) + "..." + accountAddress.slice(-4)}</span></h3>
-                                    <br />
-                                    <h4>Send <a onClick={() => {setType('Onus'); setActive1(true); setActive2(false)}} href={'#'} className={active1? 'bgcolor': ''} style={{color:'inherit'}}>Onus</a> or <a onClick={() => {setType('Token'); setActive1(false); setActive2(true)}} href={'#'} className={active2? 'bgcolor': ''} style={{color:'inherit'}}>Token</a></h4>
+                                    <h3 className="display-7 border border-light rounded shadow-lg p-3 mb-5 bg-white">Wallet Address: {accountAddress.slice(0, 4) + "..." + accountAddress.slice(-4)}</h3>
+                                    <h4 className="display-7">Send <a onClick={() => {setType('Onus'); setActive1(true); setActive2(false)}} href={'#'} className={active1? 'bgcolor': ''} style={{color:'inherit'}}>Onus</a> or <a onClick={() => {setType('Token'); setActive1(false); setActive2(true)}} href={'#'} className={active2? 'bgcolor': ''} style={{color:'inherit'}}>Token</a></h4>
                                     
                                 </div>
                             </div>
-                        ) : (
-                            <h3 className="display-5"><i>Connect Wallet</i></h3>
+                        ) : (<></>
                         )}
                         {isConnected ? (<></>) : (
                             <button className="btn btn-primary lead" onClick={connectWallet}>
