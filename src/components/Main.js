@@ -12,12 +12,14 @@ function DisperseOnus() {
     const [amounts, setAmounts] = useState([]);
     const [total, setTotal] = useState(0);
     const [onusAmount, setOnusAmount] = useState(0);
+    const [txed, setTxed] = useState(undefined);
 
     const setData = (data) => {
         data = data.split('\n');
         setAddresses([]);
         setAmounts([]);
         setTotal(0);
+        setTxed(undefined);
         for (let i = 0; i < data.length; i++) {
             if (data[i].split(',').length == 2) data[i] = data[i].split(',');
             else if (data[i].split('=').length == 2) data[i] = data[i].split('=');
@@ -43,30 +45,35 @@ function DisperseOnus() {
 
     const bill = (addresses.length != 0) ? (addresses.map((address, index) => {
         return (
-            <h6 className="col-12 col-md-5"><span>{address.slice(0, 6) + "..." + address.slice(-6)}</span><span className="amount">{amounts[index]} Onus</span></h6>
+            <h6 className="col-12"><span>{address.slice(0, 6) + "..." + address.slice(-6)}</span><span className="amount">{amounts[index]} Onus</span></h6>
         )
     })) : (<></>);
     let billData = <></>;
     if (bill != <></>) {
         billData = <>
             <h3 className="display-3"><i>Confirm</i></h3>
-            <h6 className="col-12 col-md-5"><span><b>Address</b></span><span className="amount"><b>Amount</b></span></h6>
+            <h6 className="col-12"><span><b>Address</b></span><span className="amount"><b>Amount</b></span></h6>
             <div className='row'>
                 {bill}
                 <hr></hr>
-                <h6 className="col-12 col-md-5"><span>Total</span><span className="amount">{total} Onus</span></h6>
+                <h6 className="col-12"><span>Total</span><span className="amount">{total} Onus</span></h6>
             </div>
         </>;
     }
+    let tx = '';
     let disperse = async () => {
         let signerMetamask = new ethers.providers.Web3Provider(window.ethereum).getSigner();
         let contract = new ethers.Contract('0xcC4042517863Bd7967B801200d26C15D0b19d920', [{ "type": "function", "stateMutability": "payable", "payable": true, "outputs": [], "name": "disperseOnus", "inputs": [{ "type": "address[]", "name": "recipients" }, { "type": "uint256[]", "name": "values" }], "constant": false }]);
         let amountsString = amounts.map((amount) => { return ethers.utils.parseEther(amount.toString()) });
         console.log(addresses, amountsString);
-        await contract.connect(signerMetamask).disperseOnus(addresses, amountsString, {
+        tx = await contract.connect(signerMetamask).disperseOnus(addresses, amountsString, {
             value: ethers.utils.parseEther(total.toString())
         });
+        setTxed(tx);
+        console.log(tx);
     }
+
+
 
     const exceed = (total > onusAmount) ? true : false;
     return (
@@ -81,6 +88,8 @@ function DisperseOnus() {
             {billData}
             <button className="btn btn-primary" onClick={disperse} disabled={total == 0 || exceed}>Disperse Onus</button>
             {exceed ? <h5 className="lead">You don't have enough Onus</h5> : <></>}
+            <br />
+            {txed != undefined ? <h5 className="lead">Transaction : <a target="_blank" href={txed.chainId == 1945 ? 'https://explorer-testnet.onuschain.io/tx/' + txed.hash : 'https://explorer-testnet.onuschain.io/tx/' + tx.hash}>{txed.chainId == 1945 ? 'https://explorer-testnet.onuschain.io/tx/' + txed.hash : 'https://explorer-testnet.onuschain.io/tx/' + tx.hash} </a></h5> : <></>}
         </div>
     )
 
