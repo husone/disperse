@@ -1,8 +1,7 @@
 {
-  "homepage": "http://husone.github.io/disperse",
+  "homepage": "https://husone.github.io/disperse",
   "name": "disperse",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
     "@reduxjs/toolkit": "^1.9.0",
