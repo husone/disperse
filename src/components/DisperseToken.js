@@ -60,15 +60,18 @@ function DisperseToken({ contractAddress }) {
     ], new ethers.providers.Web3Provider(window.ethereum).getSigner());
 
     const approve = async () => {
-        console.log('1')
-        let tx = await contract.approve('0xcC4042517863Bd7967B801200d26C15D0b19d920', ethers.constants.MaxUint256);
         document.getElementById('approve').innerHTML = 'Loading';
         document.getElementById('approve').disabled = true;
-        
+        try {
+        let tx = await contract.approve('0xcC4042517863Bd7967B801200d26C15D0b19d920', ethers.constants.MaxUint256);
         await tx.wait();
         document.getElementById('approve').innerHTML = 'Approve';
         document.getElementById('approve').disabled = false;
         setAllowance(ethers.constants.MaxUint256);
+        } catch (error) {
+        document.getElementById('approve').innerHTML = 'Approve';
+        document.getElementById('approve').disabled = false;
+        }
     }
 
     const getData = async () => {
@@ -126,7 +129,7 @@ function DisperseToken({ contractAddress }) {
     useEffect(() => {
         let totalBig = ethers.utils.parseUnits(total.toString(), tokenDecimals)
         setExceedAllowance((totalBig.gt(allowance)));
-    }, [total]);
+    }, [total, allowance]);
 
     let bill = (addresses.length != 0) ? (addresses.map((address, index) => {
         return (
@@ -179,13 +182,13 @@ function DisperseToken({ contractAddress }) {
             await tx.wait();
             document.getElementById('disperseToken').innerHTML = 'Disperse';
             document.getElementById('disperseToken').disabled = false;        
+            setTxed(tx);
+            console.log(txed);
         } catch (error) {
             document.getElementById('disperseToken').innerHTML = 'Disperse';
             document.getElementById('disperseToken').disabled = false;
         }
 
-        setTxed(tx);
-        console.log(txed);
     }
 
     return (
